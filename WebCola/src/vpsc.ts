@@ -223,6 +223,8 @@ DEBUG */
             var cs = [];
             this.traverse(c=> c.toString() + "\n", cs)
             return "b"+this.blockInd + "@" + this.posn + ": vars=" + this.vars.map(v=> v.toString()+":"+v.offset) + ";\n cons=\n" + cs;
+
+
         }
 DEBUG */
     }
@@ -263,6 +265,12 @@ DEBUG */
             console.log("remove block: " + b.blockInd);
             console.assert(this.contains(b));
 DEBUG */
+            if (!b)
+                return;
+            if (b.blockInd === undefined)
+                return;
+            if (b.blockInd < 0 || b.blockInd >= this.list.length)
+                return;
             var last = this.list.length - 1;
             var swapBlock = this.list[last];
             this.list.length = last;
@@ -283,7 +291,7 @@ DEBUG */
             console.assert(l!==r, "attempt to merge within the same block");
 DEBUG */
             var dist = c.right.offset - c.left.offset - c.gap;
-            if (l.vars.length < r.vars.length) {
+            if (r.blockInd >= this.list.length || r.vars.length <= this.list.length || l.vars.length < r.vars.length) {
                 r.mergeAcross(l, c, dist);
                 this.remove(l);
             } else {
