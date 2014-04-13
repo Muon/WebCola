@@ -344,7 +344,9 @@ var cola;
             } else rootGroup = { leaves: nodes, groups: [] };
 
             if (directedLinkConstraints) {
-                constraints = (constraints || []).concat(cola.generateDirectedEdgeConstraints(n, links, directedLinkConstraints.axis, directedLinkConstraints.getMinSeparation, getSourceIndex, getTargetIndex));
+                var curConstraints = (constraints || []).concat(cola.generateDirectedEdgeConstraints(n, links, directedLinkConstraints.axis, directedLinkConstraints.getMinSeparation, getSourceIndex, getTargetIndex));
+            } else {
+                var curConstraints = constraints;
             }
 
             
@@ -359,12 +361,12 @@ var cola;
             descent.run(initialUnconstrainedIterations);
 
             // apply initialIterations with user constraints but no noverlap constraints
-            if (constraints.length > 0) descent.project = new vpsc.Projection(nodes, groups, rootGroup, constraints).projectFunctions();
+            if (curConstraints.length > 0) descent.project = new vpsc.Projection(nodes, groups, rootGroup, curConstraints).projectFunctions();
             descent.run(initialUserConstraintIterations);
 
             // subsequent iterations will apply all constraints
             this.avoidOverlaps(ao);
-            if (ao) descent.project = new vpsc.Projection(nodes, groups, rootGroup, constraints, true).projectFunctions();
+            if (ao) descent.project = new vpsc.Projection(nodes, groups, rootGroup, curConstraints, true).projectFunctions();
 
             // allow not immediately connected nodes to relax apart (p-stress)
             descent.G = G;
